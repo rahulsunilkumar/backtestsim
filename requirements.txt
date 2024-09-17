@@ -1,7 +1,7 @@
-streamlit==1.25.0
-yfinance==0.2.18
-matplotlib==3.5.3
-numpy>=1.26.0   # Compatible with Python 3.12
-pandas==2.0.3
-setuptools>=58.0.0
-pip>=24.0
+streamlit
+yfinance
+matplotlib
+numpy
+pandas
+setuptools
+pip
