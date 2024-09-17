@@ -1,5 +1,7 @@
-streamlit==1.25.0      # or the latest version at the time
-yfinance==0.2.26       # for fetching historical stock data
-matplotlib==3.7.2      # for plotting the charts
-numpy==1.25.0          # for numerical calculations
-pandas==2.0.3          # for handling dataframes and time series data
+streamlit==1.25.0
+yfinance==0.2.26
+matplotlib==3.7.2
+numpy==1.25.0
+pandas==2.0.3
+setuptools>=58.0.0  # To ensure 'distutils' is available
+pip>=24.0  # Optional: Ensure latest pip version
