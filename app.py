@@ -5,23 +5,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 
-# Streamlit App Title
-st.title("Backtesting Trading Strategies")
+# Blurb at the top explaining the purpose of the app
+st.title("Backtesting Trading Strategies with Moving Average Crossover")
+
+st.write("""
+This web app allows you to backtest trading strategies using historical stock data.
+You can select a stock, define the short-term and long-term moving averages for the crossover strategy, and see how the strategy would have performed over a specific date range. 
+The goal is to help visualize the potential profit or loss based on past performance and to gain insights into stock market trends. 
+""")
+
+# List of stock tickers for the dropdown
+tickers = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'FB', 'NFLX', 'NVDA']
 
 # Sidebar - User inputs
 st.sidebar.header("User Input Parameters")
 
-# Stock ticker input
-ticker = st.sidebar.text_input('Stock Ticker', value='AAPL', max_chars=10)
+# Stock ticker dropdown
+ticker = st.sidebar.selectbox('Select Stock Ticker', options=tickers, index=0)
 
-# Date range input
-start_date = st.sidebar.date_input('Start Date', value=datetime.date(2020, 1, 1))
-end_date = st.sidebar.date_input('End Date', value=datetime.date.today())
+# Date range slider
+start_date = st.sidebar.slider('Start Date', value=datetime.date(2020, 1, 1), min_value=datetime.date(2010, 1, 1), max_value=datetime.date.today())
+end_date = st.sidebar.slider('End Date', value=datetime.date.today(), min_value=datetime.date(2010, 1, 1), max_value=datetime.date.today())
 
-# Moving average strategy parameters
+# Moving average strategy parameters - Sliders for short and long windows
 st.sidebar.subheader("Moving Average Strategy Parameters")
-short_window = st.sidebar.number_input('Short Moving Average Window', min_value=1, max_value=50, value=20)
-long_window = st.sidebar.number_input('Long Moving Average Window', min_value=50, max_value=200, value=50)
+short_window = st.sidebar.slider('Short Moving Average Window', min_value=5, max_value=50, value=20)
+long_window = st.sidebar.slider('Long Moving Average Window', min_value=50, max_value=200, value=50)
 
 # Fetch the stock data
 @st.cache
@@ -33,7 +42,7 @@ def get_data(ticker, start, end):
 # Get data based on user inputs
 data = get_data(ticker, start_date, end_date)
 
-# Display the stock data if checkbox is checked
+# Show raw data if checkbox is checked
 if st.sidebar.checkbox("Show Raw Data", False):
     st.subheader(f"Raw Data for {ticker}")
     st.write(data.tail())
@@ -54,7 +63,7 @@ signals = moving_average_crossover(data, short_window, long_window)
 
 # Plot the stock price and moving averages with buy/sell signals
 def plot_signals(signals):
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(14, 8))  # Increased size of the graphs
     
     # Plot adjusted closing price
     ax.plot(signals.index, signals['Price'], label='Price', alpha=0.5)
@@ -103,7 +112,7 @@ portfolio = portfolio_performance(signals)
 # Plot the portfolio value over time
 st.subheader("Portfolio Performance")
 def plot_portfolio_performance(portfolio):
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(14, 8))  # Increased size of the graphs
     ax.plot(portfolio.index, portfolio['total'], label='Portfolio Value', alpha=0.75)
     ax.set_title(f"Portfolio Value Over Time: {ticker}")
     ax.set_xlabel("Date")
@@ -118,3 +127,11 @@ st.subheader("Performance Metrics")
 total_return = portfolio['total'][-1] / portfolio['total'][0] - 1
 st.write(f"Total Return: {total_return*100:.2f}%")
 st.write(f"Final Portfolio Value: ${portfolio['total'][-1]:.2f}")
+
+# Summary at the bottom
+st.write("""
+### Summary of Results
+This backtest simulated a Moving Average Crossover strategy for the selected stock. The strategy buys the stock when the short-term moving average crosses above the long-term moving average (indicating a bullish trend) and sells when the short-term moving average crosses below the long-term moving average (indicating a bearish trend).
+
+You can see the buy and sell signals on the graph above and the overall performance of your portfolio based on this strategy. The final portfolio value and total return are shown above for the chosen time period.
+""")
